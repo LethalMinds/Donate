@@ -4,11 +4,12 @@
 
     <!-- Nav Drawer Menu Items -->
     <string-array name="nav_drawer_items">
-        <item >News</item>
-        <item >Donate</item>
-        <item >Profile</item>
-        <item >Login/Register</item>
-        <item >About Us</item>
+        <item>News</item>
+        <item>Donate</item>
+        <item>Profile</item>
+        <item>Login</item>
+        <item>About Us</item>
+        <item>Logout</item>
     </string-array>
 
     <array name="nav_drawer_icons">
@@ -17,6 +18,18 @@
         <item>@drawable/ic_face_green_500_18dp</item>
         <item>@drawable/ic_public_green_500_18dp</item>
         <item>@drawable/ic_public_green_500_18dp</item>
+        <item>@drawable/ic_assignment_return_green_500_18dp</item>
     </array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <style name="Widget.CardContent" parent="android:Widget">
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingBottom">24dp</item>
+        <item name="android:orientation">vertical</item>
+    </style>
 
 </resources>

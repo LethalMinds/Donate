@@ -2,7 +2,11 @@ package com.lethalminds.udonate.client.activities;
 
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,15 +14,25 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.lethalminds.udonate.R;
 import com.lethalminds.udonate.client.adapters.NavDrawerListAdapter;
-import com.lethalminds.udonate.client.model.NavDrawerItem;
+import com.lethalminds.udonate.client.fragments.AboutUsFragment;
+import com.lethalminds.udonate.client.fragments.DonateFragment;
+import com.lethalminds.udonate.client.fragments.LoginFragment;
+import com.lethalminds.udonate.client.fragments.NewsFragment;
+import com.lethalminds.udonate.client.fragments.ProfileFragment;
+import com.lethalminds.udonate.client.utilities.NavDrawerItem;
+import com.lethalminds.udonate.client.utilities.UserLocalStore;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements LoginFragment.OnFragmentInteractionListener,
+        NewsFragment.OnFragmentInteractionListener, DonateFragment.OnFragmentInteractionListener,
+        AboutUsFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener{
 
     // slide menu items
     private String[] navMenuTitles;
@@ -30,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
+    private LinearLayout navDrawerLayout;
+    private UserLocalStore userLocalStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +55,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        fragmentManager = getSupportFragmentManager();
+
+        //check user logged in
+        userLocalStore = new UserLocalStore(this);
 
         //Initialize nav menu
         mTitle = mDrawerTitle = getTitle();
@@ -44,13 +66,19 @@ public class MainActivity extends AppCompatActivity {
         navMenuIcons = getResources().obtainTypedArray(R.array.nav_drawer_icons);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
+        navDrawerLayout = (LinearLayout) findViewById(R.id.nav_drawer_list);
         navDrawerItems = new ArrayList<NavDrawerItem>();
-        //Add Nav menu items
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
+
+        //Create and Add Nav menu items
+        NavDrawerItem newsItem = new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1));
+        NavDrawerItem donateItem =new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1));
+        NavDrawerItem profileItem =new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1));
+        NavDrawerItem loginItem =new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1));
+        NavDrawerItem aboutUsItem =new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1));
+        navDrawerItems.add(newsItem);
+        navDrawerItems.add(donateItem);
+        navDrawerItems.add(userLocalStore.getLoggedInUser()!= null ? profileItem : loginItem);
+        navDrawerItems.add(aboutUsItem);
 
         navMenuIcons.recycle();
         mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
@@ -74,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         mDrawerLayout.addDrawerListener(mDrawerToggle);
-
     }
 
     @Override
@@ -84,6 +111,11 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 
     /**
@@ -96,8 +128,32 @@ public class MainActivity extends AppCompatActivity {
             mDrawerList.setItemChecked(position, true);
             mDrawerList.setSelection(position);
             setTitle(navMenuTitles[position]);
-            mDrawerLayout.closeDrawer(mDrawerList);
+            mDrawerLayout.closeDrawer(navDrawerLayout);
+
+            switch (position){
+                case 0: // news screen
+                    displayFragment(new NewsFragment());
+                    break;
+                case 1:
+                    displayFragment(new DonateFragment());
+                    break;
+                case 2:
+                    if(userLocalStore.getLoggedInUser() != null) displayFragment(new ProfileFragment());
+                    else displayFragment(new LoginFragment());
+                    break;
+                case 3:
+                    displayFragment(new AboutUsFragment());
+                    break;
+                default:
+                    break;
+            }
         }
+    }
+
+    public void displayFragment(Fragment frag){
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame_container, frag);
+        fragmentTransaction.commit();
     }
 
     @Override

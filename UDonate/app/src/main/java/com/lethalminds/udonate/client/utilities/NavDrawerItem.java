@@ -1,4 +1,4 @@
-package com.lethalminds.udonate.client.model;
+package com.lethalminds.udonate.client.utilities;
 
 /**
  * Created by Nishok on 4/2/2016.

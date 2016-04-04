@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lethalminds.udonate.R;
-import com.lethalminds.udonate.client.model.NavDrawerItem;
+import com.lethalminds.udonate.client.utilities.NavDrawerItem;
 
 import java.util.ArrayList;
 
