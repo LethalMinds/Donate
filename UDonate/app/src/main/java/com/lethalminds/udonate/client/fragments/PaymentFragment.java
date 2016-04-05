@@ -11,13 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.lethalminds.udonate.R;
-import com.lethalminds.udonate.client.adapters.NewsRecyclerCardAdapter;
+import com.lethalminds.udonate.client.adapters.PaymentsRecyclerCardAdapter;
 import com.lethalminds.udonate.client.adapters.TransactionRecyclerCardAdapter;
 import com.lethalminds.udonate.client.utilities.User;
 import com.lethalminds.udonate.client.utilities.UserLocalStore;
 import com.lethalminds.udonate.server.model.NodeRequests;
 import com.lethalminds.udonate.server.model.callbacks.GetCallback;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -25,12 +27,12 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link NewsFragment.OnFragmentInteractionListener} interface
+ * {@link PaymentFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link NewsFragment#newInstance} factory method to
+ * Use the {@link PaymentFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NewsFragment extends Fragment {
+public class PaymentFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -43,11 +45,11 @@ public class NewsFragment extends Fragment {
     LinearLayoutManager mLayoutManager;
     UserLocalStore userLocalStore;
     User user;
-    NewsRecyclerCardAdapter mAdapter;
+    PaymentsRecyclerCardAdapter mAdapter;
 
     private OnFragmentInteractionListener mListener;
 
-    public NewsFragment() {
+    public PaymentFragment() {
         // Required empty public constructor
     }
 
@@ -57,11 +59,11 @@ public class NewsFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment NewsFragment.
+     * @return A new instance of fragment PaymentFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static NewsFragment newInstance(String param1, String param2) {
-        NewsFragment fragment = new NewsFragment();
+    public static PaymentFragment newInstance(String param1, String param2) {
+        PaymentFragment fragment = new PaymentFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -82,8 +84,8 @@ public class NewsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View nView = inflater.inflate(R.layout.fragment_news, container, false);
-        mRecyclerView = (RecyclerView) nView.findViewById(R.id.recycler_view_news);
+        View payView = inflater.inflate(R.layout.fragment_payment, container, false);
+        mRecyclerView = (RecyclerView) payView.findViewById(R.id.recycler_view_payments);
         mRecyclerView.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(getContext());
@@ -91,25 +93,17 @@ public class NewsFragment extends Fragment {
         userLocalStore = new UserLocalStore(getContext());
         user = userLocalStore.getLoggedInUser();
 
-        getPopulateNews();
-        return nView;
+        try {
+            JSONArray cardsArray =  (JSONArray)(new JSONObject(user.userJSON)).get("cards");
+            mAdapter = new PaymentsRecyclerCardAdapter(cardsArray);
+            mRecyclerView.setAdapter(mAdapter);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return payView;
     }
 
-    private void getPopulateNews() {
-        NodeRequests serverRequest = new NodeRequests(getContext());
-        serverRequest.fetchNewsCollectionAsyncTask(new GetCallback() {
-            @Override
-            public <T> void done(T items) {
-                populateNews((ArrayList<JSONObject>) items);
-            }
-
-        });
-    }
-
-    private void populateNews(ArrayList<JSONObject> news) {
-        mAdapter = new NewsRecyclerCardAdapter(news);
-        mRecyclerView.setAdapter(mAdapter);
-    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

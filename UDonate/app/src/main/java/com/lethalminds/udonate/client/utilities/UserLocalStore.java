@@ -15,7 +15,6 @@ import java.util.Date;
 public class UserLocalStore {
 
     public static final String SP_NAME = "userdetails";
-    public static JSONObject userJSON = null;
 
     SharedPreferences userLocalDatabase;
 
@@ -34,7 +33,7 @@ public class UserLocalStore {
         userLocalDatabaseEditor.putString("username", user.username);
         userLocalDatabaseEditor.putString("address", user.address);
         userLocalDatabaseEditor.putString("dob", user.dob);
-        this.userJSON = user.userJSON;
+        userLocalDatabaseEditor.putString("userJSON", user.userJSON);
         userLocalDatabaseEditor.commit();
     }
 
@@ -48,7 +47,6 @@ public class UserLocalStore {
         SharedPreferences.Editor userLocalDatabaseEditor = userLocalDatabase.edit();
         userLocalDatabaseEditor.clear();
         userLocalDatabaseEditor.commit();
-        this.userJSON = null;
 
     }
 
@@ -61,8 +59,9 @@ public class UserLocalStore {
         String username = userLocalDatabase.getString("username", "");
         String address = userLocalDatabase.getString("address", "");
         String dob = userLocalDatabase.getString("dob", "");
+        String userJSON = userLocalDatabase.getString("userJSON", "");
 
-        User user = new User(username, email, password, dob, address, null);
+        User user = new User(username, email, password, dob, address, userJSON);
         return user;
     }
 

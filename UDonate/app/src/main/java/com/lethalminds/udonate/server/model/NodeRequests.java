@@ -3,7 +3,6 @@ package com.lethalminds.udonate.server.model;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.lethalminds.udonate.client.utilities.User;
 import com.lethalminds.udonate.server.model.callbacks.GetCallback;
@@ -19,7 +18,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.net.UnknownServiceException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -229,7 +227,7 @@ public class NodeRequests {
                     String email = jObject.getString("email");
                     String address = jObject.getString("address");
                     String dob = jObject.getString("dob");
-                    returnedUser = new User(username, email, pass, dob, address, jObject);
+                    returnedUser = new User(username, email, pass, dob, address, result);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -259,7 +257,7 @@ public class NodeRequests {
         String uname, pass, email, address, dob;
 
         public updateBasicUserCollectionAsyncTask(String username, String password,
-                                                   String email, String address, String dob,  GetCallback callback) {
+                                                  String email, String address, String dob,  GetCallback callback) {
             this.callback = callback;
             this.uname = username;
             this.pass = password;
@@ -302,7 +300,7 @@ public class NodeRequests {
                     String email = jObject.getString("email");
                     String address = jObject.getString("address");
                     String dob = jObject.getString("dob");
-                    returnedUser = new User(username, email, pass, dob, address, jObject);
+                    returnedUser = new User(username, email, pass, dob, address, jObject.toString());
                 }
             } catch (Exception e) {
                 e.printStackTrace();

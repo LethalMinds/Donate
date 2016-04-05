@@ -23,6 +23,7 @@ import com.lethalminds.udonate.client.fragments.AboutUsFragment;
 import com.lethalminds.udonate.client.fragments.DonateFragment;
 import com.lethalminds.udonate.client.fragments.LoginFragment;
 import com.lethalminds.udonate.client.fragments.NewsFragment;
+import com.lethalminds.udonate.client.fragments.PaymentFragment;
 import com.lethalminds.udonate.client.fragments.ProfileEditFragment;
 import com.lethalminds.udonate.client.fragments.ProfileFragment;
 import com.lethalminds.udonate.client.fragments.TransactionFragment;
@@ -35,7 +36,8 @@ public class MainActivity extends AppCompatActivity
         implements LoginFragment.OnFragmentInteractionListener,
         NewsFragment.OnFragmentInteractionListener, DonateFragment.OnFragmentInteractionListener,
         AboutUsFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener,
-        ProfileEditFragment.OnFragmentInteractionListener, TransactionFragment.OnFragmentInteractionListener {
+        ProfileEditFragment.OnFragmentInteractionListener, TransactionFragment.OnFragmentInteractionListener,
+        PaymentFragment.OnFragmentInteractionListener{
 
     // slide menu items
     private String[] navMenuTitles;
@@ -97,7 +99,7 @@ public class MainActivity extends AppCompatActivity
         NavDrawerItem aboutUsItem =new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1));
         navDrawerItems.add(newsItem);
         navDrawerItems.add(donateItem);
-        navDrawerItems.add(userLocalStore.getLoggedInUser()!= null ? profileItem : loginItem);
+        navDrawerItems.add(userLocalStore.getLoggedInUser() != null ? profileItem : loginItem);
         navDrawerItems.add(aboutUsItem);
 
         navMenuIcons.recycle();
@@ -122,7 +124,10 @@ public class MainActivity extends AppCompatActivity
             }
         };
         mDrawerLayout.addDrawerListener(mDrawerToggle);
-
+        if (savedInstanceState == null) {
+            setTitle(navMenuTitles[0]);
+            displayFragment(new NewsFragment());
+        }
     }
 
     @Override

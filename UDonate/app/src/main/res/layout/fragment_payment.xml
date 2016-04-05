@@ -3,10 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/counter_text_color"
-    tools:context="com.lethalminds.udonate.client.fragments.TransactionFragment">
+    tools:context="com.lethalminds.udonate.client.fragments.PaymentFragment">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view_transaction"
+        android:id="@+id/recycler_view_payments"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

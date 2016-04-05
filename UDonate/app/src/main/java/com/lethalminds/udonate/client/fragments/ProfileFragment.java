@@ -8,13 +8,10 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.CardView;
-import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -134,6 +131,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         TextView viewTransactions = (TextView) pView.findViewById(R.id.view_transaction);
         viewTransactions.setOnClickListener(this);
 
+        TextView viewPayments = (TextView) pView.findViewById(R.id.view_payments);
+        viewPayments.setOnClickListener(this);
+
+        TextView addCard = (TextView) pView.findViewById(R.id.addcard);
+        addCard.setOnClickListener(this);
+
         return pView;
     }
 
@@ -175,6 +178,14 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                 fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.frame_container, new TransactionFragment()).addToBackStack(null);
                 fragmentTransaction.commit();
+                break;
+            case R.id.view_payments:
+                fragmentManager = getFragmentManager();
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.frame_container, new PaymentFragment()).addToBackStack(null);
+                fragmentTransaction.commit();
+                break;
+            case R.id.addcard:
                 break;
             default:
                 break;

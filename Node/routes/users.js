@@ -49,7 +49,7 @@ router.post('/findAndModify', function (req,res) {
       });
 });
 
-/* POST getNews listing. */
+/* POST get all transactions for user listing. */
 router.post('/getAllTransactions', function (req, res) {
   var transCollection = dbo.collection('transactions');
   transCollection.find({"donor_id" : req.body.username}).toArray(function (err, docs) {
