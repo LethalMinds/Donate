@@ -59,6 +59,24 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         fragmentManager = getSupportFragmentManager();
+        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                //Set drawer opener only when there is 0 backstack fragments
+                if(fragmentManager.getBackStackEntryCount() == 0){
+                    mDrawerToggle.setDrawerIndicatorEnabled(true);
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                    getSupportActionBar().setHomeButtonEnabled(true);
+                }
+                else
+                {
+                    mDrawerToggle.setDrawerIndicatorEnabled(false);
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                    getSupportActionBar().setHomeButtonEnabled(true);
+                }
+                mDrawerToggle.syncState();
+            }
+        });
         //check user logged in
         userLocalStore = new UserLocalStore(this);
 
@@ -111,6 +129,10 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         // toggle nav drawer on selecting action bar app icon/title
         if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        else if(item.getItemId() == android.R.id.home){
+            this.onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
