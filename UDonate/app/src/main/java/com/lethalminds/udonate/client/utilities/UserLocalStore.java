@@ -3,6 +3,8 @@ package com.lethalminds.udonate.client.utilities;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,6 +15,7 @@ import java.util.Date;
 public class UserLocalStore {
 
     public static final String SP_NAME = "userdetails";
+    public static JSONObject userJSON = null;
 
     SharedPreferences userLocalDatabase;
 
@@ -29,7 +32,9 @@ public class UserLocalStore {
         userLocalDatabaseEditor.putString("email", user.email);
         userLocalDatabaseEditor.putString("password", user.password);
         userLocalDatabaseEditor.putString("username", user.username);
+        userLocalDatabaseEditor.putString("address", user.address);
         userLocalDatabaseEditor.putString("dob", user.dob);
+        this.userJSON = user.userJSON;
         userLocalDatabaseEditor.commit();
     }
 
@@ -43,6 +48,8 @@ public class UserLocalStore {
         SharedPreferences.Editor userLocalDatabaseEditor = userLocalDatabase.edit();
         userLocalDatabaseEditor.clear();
         userLocalDatabaseEditor.commit();
+        this.userJSON = null;
+
     }
 
     public User getLoggedInUser() {

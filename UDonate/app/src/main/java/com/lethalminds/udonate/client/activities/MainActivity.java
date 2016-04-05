@@ -23,7 +23,9 @@ import com.lethalminds.udonate.client.fragments.AboutUsFragment;
 import com.lethalminds.udonate.client.fragments.DonateFragment;
 import com.lethalminds.udonate.client.fragments.LoginFragment;
 import com.lethalminds.udonate.client.fragments.NewsFragment;
+import com.lethalminds.udonate.client.fragments.ProfileEditFragment;
 import com.lethalminds.udonate.client.fragments.ProfileFragment;
+import com.lethalminds.udonate.client.fragments.TransactionFragment;
 import com.lethalminds.udonate.client.utilities.NavDrawerItem;
 import com.lethalminds.udonate.client.utilities.UserLocalStore;
 
@@ -32,7 +34,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity
         implements LoginFragment.OnFragmentInteractionListener,
         NewsFragment.OnFragmentInteractionListener, DonateFragment.OnFragmentInteractionListener,
-        AboutUsFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener{
+        AboutUsFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener,
+        ProfileEditFragment.OnFragmentInteractionListener, TransactionFragment.OnFragmentInteractionListener {
 
     // slide menu items
     private String[] navMenuTitles;
@@ -56,7 +59,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         fragmentManager = getSupportFragmentManager();
-
         //check user logged in
         userLocalStore = new UserLocalStore(this);
 
@@ -102,6 +104,7 @@ public class MainActivity extends AppCompatActivity
             }
         };
         mDrawerLayout.addDrawerListener(mDrawerToggle);
+
     }
 
     @Override

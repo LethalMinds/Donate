@@ -1,18 +1,30 @@
 package com.lethalminds.udonate.client.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.CardView;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.lethalminds.udonate.R;
+import com.lethalminds.udonate.client.activities.MainActivity;
 import com.lethalminds.udonate.client.adapters.NavDrawerListAdapter;
 import com.lethalminds.udonate.client.utilities.NavDrawerItem;
+import com.lethalminds.udonate.client.utilities.User;
+import com.lethalminds.udonate.client.utilities.UserLocalStore;
 
 import java.util.ArrayList;
 
@@ -24,7 +36,7 @@ import java.util.ArrayList;
  * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -38,6 +50,10 @@ public class ProfileFragment extends Fragment {
     private TypedArray navMenuIcons;
     private NavDrawerListAdapter adapter;
     private ListView mDrawerList;
+    UserLocalStore userLocalStore;
+    User user;
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
 
     private OnFragmentInteractionListener mListener;
 
@@ -77,16 +93,47 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View pView = inflater.inflate(R.layout.fragment_profile, container, false);
+        userLocalStore = new UserLocalStore(getContext());
+        user = userLocalStore.getLoggedInUser();
         navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
         navMenuIcons = getResources().obtainTypedArray(R.array.nav_drawer_icons);
         navDrawerItems = new ArrayList<NavDrawerItem>();
         NavDrawerItem logoutItem = new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1));
         navDrawerItems.add(logoutItem);
         navMenuIcons.recycle();
-        //mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
         adapter = new NavDrawerListAdapter(getContext(), navDrawerItems);
         mDrawerList = (ListView) pView.findViewById(R.id.profile_list);
         mDrawerList.setAdapter(adapter);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        userLocalStore.setUserLoggedIn(false);
+                        userLocalStore.clearUserData();
+                        user = null;
+                        Intent mainIntent = new Intent(getContext(), MainActivity.class);
+                        mainIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(mainIntent);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+
+        TextView profileName = (TextView) pView.findViewById(R.id.profile_name);
+        profileName.setText(user.username);
+        TextView profileEmail = (TextView) pView.findViewById(R.id.profile_email);
+        profileEmail.setText(user.email);
+
+        ImageView editImg = (ImageView) pView.findViewById(R.id.edit_img);
+        editImg.setOnClickListener(this);
+
+        TextView viewTransactions = (TextView) pView.findViewById(R.id.view_transaction);
+        viewTransactions.setOnClickListener(this);
+
         return pView;
     }
 
@@ -114,6 +161,26 @@ public class ProfileFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.edit_img:
+                fragmentManager = getFragmentManager();
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.frame_container, new ProfileEditFragment()).addToBackStack(null);
+                fragmentTransaction.commit();
+                break;
+            case R.id.view_transaction:
+                fragmentManager = getFragmentManager();
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.frame_container, new TransactionFragment()).addToBackStack(null);
+                fragmentTransaction.commit();
+                break;
+            default:
+                break;
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -128,4 +195,5 @@ public class ProfileFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
 }

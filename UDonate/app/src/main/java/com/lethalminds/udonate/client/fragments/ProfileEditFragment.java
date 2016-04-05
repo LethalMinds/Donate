@@ -1,20 +1,19 @@
 package com.lethalminds.udonate.client.fragments;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.lethalminds.udonate.R;
-import com.lethalminds.udonate.client.activities.MainActivity;
 import com.lethalminds.udonate.client.utilities.User;
 import com.lethalminds.udonate.client.utilities.UserLocalStore;
 import com.lethalminds.udonate.server.model.NodeRequests;
@@ -23,12 +22,12 @@ import com.lethalminds.udonate.server.model.callbacks.GetCallback;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link LoginFragment.OnFragmentInteractionListener} interface
+ * {@link ProfileEditFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link LoginFragment#newInstance} factory method to
+ * Use the {@link ProfileEditFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LoginFragment extends Fragment implements View.OnClickListener{
+public class ProfileEditFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -37,12 +36,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    EditText uName,pass;
     UserLocalStore userLocalStore;
+    User user;
 
     private OnFragmentInteractionListener mListener;
 
-    public LoginFragment() {
+    public ProfileEditFragment() {
         // Required empty public constructor
     }
 
@@ -52,11 +51,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment LoginFragment.
+     * @return A new instance of fragment ProfileEditFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static LoginFragment newInstance(String param1, String param2) {
-        LoginFragment fragment = new LoginFragment();
+    public static ProfileEditFragment newInstance(String param1, String param2) {
+        ProfileEditFragment fragment = new ProfileEditFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -77,20 +76,54 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View lView = inflater.inflate(R.layout.fragment_login, container, false);
-        uName = (EditText) lView.findViewById(R.id.uname);
-        pass = (EditText) lView.findViewById(R.id.pass);
-        EditText register = (EditText) lView.findViewById(R.id.registerLink);
-        TextView forgotLink = (TextView) lView.findViewById(R.id.forgotLink);
-        Button login = (Button) lView.findViewById(R.id.login);
+        View pEditView = inflater.inflate(R.layout.fragment_profile_edit, container, false);
         userLocalStore = new UserLocalStore(getContext());
+        user = userLocalStore.getLoggedInUser();
+        final EditText uname = (EditText) pEditView.findViewById(R.id.edit_uname);
+        uname.setText(user.username);
+        final EditText email = (EditText) pEditView.findViewById(R.id.edit_email);
+        email.setText(user.email);
+        final EditText address = (EditText) pEditView.findViewById(R.id.edit_address);
+        address.setText(user.address);
+        final EditText dob = (EditText) pEditView.findViewById(R.id.edit_dob);
+        dob.setText(user.dob);
+        final String[] date = user.dob.split("/");
+        dob.setOnClickListener(new View.OnClickListener() {
+            //Using DatePickerDialog for selecting the calendar.
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog.OnDateSetListener datepickerlistener = new DatePickerDialog.OnDateSetListener() {
+                    //set the selected date value from the date picker dialog
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        dob.setText(new StringBuilder()
+                                .append(monthOfYear + 1).append("/").append(dayOfMonth).append("/")
+                                .append(year));
+                    }
+                };
+                DatePickerDialog dobDiag = new DatePickerDialog(getContext(), datepickerlistener, Integer.parseInt(date[2]), Integer.parseInt(date[0]), Integer.parseInt(date[1]));
+                dobDiag.show();
+            }
+        });
+        final EditText pass = (EditText) pEditView.findViewById(R.id.edit_pass);
+        pass.setText(user.password);
 
-        //set onclick Listener
-        login.setOnClickListener(this);
-        forgotLink.setOnClickListener(this);
-        register.setOnClickListener(this);
-
-        return lView;
+        Button submit = (Button) pEditView.findViewById(R.id.submit);
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NodeRequests findModifyReq = new NodeRequests(uname.getText().toString(),pass.getText().toString()
+                ,email.getText().toString(),address.getText().toString(),dob.getText().toString(),getContext());
+                findModifyReq.updateBasicUserCollectionAsyncTask(new GetCallback() {
+                    @Override
+                    public <T> void done(T items) {
+                        userLocalStore.storeUserData((User) items);
+                        getFragmentManager().popBackStackImmediate();
+                    }
+                });
+            }
+        });
+        return pEditView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -117,41 +150,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         mListener = null;
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.login:
-                NodeRequests serverRequest = new NodeRequests(uName.getText().toString(), pass.getText().toString(), getContext());
-                serverRequest.authenticateUserCollectionAsyncTask(new GetCallback() {
-                    @Override
-                    public <T> void done(T items) {
-                        if(items == null) pass.setError("username password didn't match or no user available");
-                        else
-                        {
-                            userLocalStore.setUserLoggedIn(true);
-                            userLocalStore.storeUserData((User) items);
-                            Intent mainIntent =  new Intent(getContext(), MainActivity.class);
-                            mainIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(mainIntent);
-                        }
-                    }
-                });
-                break;
-            case R.id.registerLink:
-                break;
-            case R.id.forgotLink:
-                break;
-            default:
-                break;
-        }
-    }
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
+     * <p/>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
