@@ -20,6 +20,7 @@ import android.widget.ListView;
 import com.lethalminds.udonate.R;
 import com.lethalminds.udonate.client.adapters.NavDrawerListAdapter;
 import com.lethalminds.udonate.client.fragments.AboutUsFragment;
+import com.lethalminds.udonate.client.fragments.DetailsFragment;
 import com.lethalminds.udonate.client.fragments.DonateFragment;
 import com.lethalminds.udonate.client.fragments.LoginFragment;
 import com.lethalminds.udonate.client.fragments.NewsFragment;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity
         NewsFragment.OnFragmentInteractionListener, DonateFragment.OnFragmentInteractionListener,
         AboutUsFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener,
         ProfileEditFragment.OnFragmentInteractionListener, TransactionFragment.OnFragmentInteractionListener,
-        PaymentFragment.OnFragmentInteractionListener{
+        PaymentFragment.OnFragmentInteractionListener, DetailsFragment.OnFragmentInteractionListener{
 
     // slide menu items
     private String[] navMenuTitles;
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
+        //Do nothing for fragment interactions
     }
 
     /**

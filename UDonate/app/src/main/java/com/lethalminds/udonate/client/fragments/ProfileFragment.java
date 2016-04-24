@@ -98,6 +98,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
         NavDrawerItem logoutItem = new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1));
         navDrawerItems.add(logoutItem);
         navMenuIcons.recycle();
+        //Logout button
         adapter = new NavDrawerListAdapter(getContext(), navDrawerItems);
         mDrawerList = (ListView) pView.findViewById(R.id.profile_list);
         mDrawerList.setAdapter(adapter);

@@ -30,13 +30,18 @@ public class NodeRequests {
     ProgressDialog progressDialog;
     public static final int CONNECTION_TIMEOUT = 1000 * 15;
     public static final String SERVER_ADDRESS = "http://10.0.2.2:9090/";
-    public String uname, pass, email, address, dob;
+    public String uname, pass, email, address, dob, category;
 
     public NodeRequests(Context context) {
         progressDialog = new ProgressDialog(context);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Please wait...");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    }
+
+    public NodeRequests(String category,  Context context) {
+        this(context);
+        this.category = category;
     }
 
     public NodeRequests(String uname, String pass, Context context){
@@ -60,6 +65,11 @@ public class NodeRequests {
     public void fetchTransactionsCollectionAsyncTask(GetCallback deptCallback) {
         progressDialog.show();
         new fetchTransactionsCollectionAsyncTask(this.uname, deptCallback).execute();
+    }
+
+    public void fetchDonationCollectionByCategoryAsyncTask(GetCallback deptCallback) {
+        progressDialog.show();
+        new fetchDonationCollectionByCategoryAsyncTask(this.category, deptCallback).execute();
     }
 
     public void authenticateUserCollectionAsyncTask(GetCallback deptCallback) {
@@ -174,6 +184,67 @@ public class NodeRequests {
                 }
             }
             return transList;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<JSONObject> result) {
+            super.onPostExecute(result);
+            progressDialog.dismiss();
+            callback.done(result);
+        }
+    }
+
+    public class fetchDonationCollectionByCategoryAsyncTask extends AsyncTask<Void, Void, ArrayList<JSONObject>> {
+        GetCallback callback;
+        String category;
+        ArrayList<JSONObject> donationList = new ArrayList<JSONObject>();
+
+        public fetchDonationCollectionByCategoryAsyncTask(String category, GetCallback callback) {
+            this.callback = callback;
+            this.category = category;
+        }
+
+        @Override
+        protected ArrayList<JSONObject> doInBackground(Void... params) {
+            BufferedReader reader = null;
+            Map<String, String> dataToSend = new HashMap<>();
+            dataToSend.put("category", this.category);
+            dataToSend.put("status", "new");
+            String encodedStr = getEncodedData(dataToSend);
+            try {
+                //Converting address String to URL
+                URL url = new URL(SERVER_ADDRESS + "news/getDonations");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                //Post Method
+                con.setRequestMethod("POST");
+                con.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+                writer.write(encodedStr);
+                writer.flush();
+                StringBuilder sb = new StringBuilder();
+                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                String result = sb.toString();
+                JSONArray jsonarray = new JSONArray(result);
+                for (int i = 0; i < jsonarray.length(); i++) {
+                    donationList.add(jsonarray.getJSONObject(i));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return donationList;
         }
 
         @Override

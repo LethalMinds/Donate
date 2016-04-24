@@ -21,4 +21,16 @@ router.post('/getNews', function (req, res) {
     });
 });
 
+router.post('/getDonations', function(req, res, next) {
+    var donationCollection = req.dbo.collection('donations');
+    donationCollection.find({"category" : req.body.category, "status" : req.body.status}).toArray(function (err, docs) {
+        if (!err) {
+            res.send(docs);
+        } else {
+            console.dir(err);
+        }
+    });
+});
+
+
 module.exports = router;

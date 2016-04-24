@@ -3,51 +3,41 @@ package com.lethalminds.udonate.client.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.StringDef;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.lethalminds.udonate.R;
-import com.lethalminds.udonate.client.adapters.NewsRecyclerCardAdapter;
-import com.lethalminds.udonate.client.adapters.TransactionRecyclerCardAdapter;
-import com.lethalminds.udonate.client.utilities.User;
-import com.lethalminds.udonate.client.utilities.UserLocalStore;
-import com.lethalminds.udonate.server.model.NodeRequests;
-import com.lethalminds.udonate.server.model.callbacks.GetCallback;
 
+import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link NewsFragment.OnFragmentInteractionListener} interface
+ * {@link DetailsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link NewsFragment#newInstance} factory method to
+ * Use the {@link DetailsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NewsFragment extends Fragment {
+public class DetailsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-    RecyclerView mRecyclerView;
-    LinearLayoutManager mLayoutManager;
-    UserLocalStore userLocalStore;
-    User user;
-    NewsRecyclerCardAdapter mAdapter;
+    private String mParam1, mParam2, mFragID;
+    private JSONObject item;
 
     private OnFragmentInteractionListener mListener;
 
-    public NewsFragment() {
+    public DetailsFragment() {
         // Required empty public constructor
     }
 
@@ -57,11 +47,11 @@ public class NewsFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment NewsFragment.
+     * @return A new instance of fragment DetailsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static NewsFragment newInstance(String param1, String param2) {
-        NewsFragment fragment = new NewsFragment();
+    public static DetailsFragment newInstance(String param1, String param2) {
+        DetailsFragment fragment = new DetailsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -75,6 +65,12 @@ public class NewsFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+            mFragID = getArguments().getString("fragID");
+            try {
+                item = new JSONObject(getArguments().getString("json"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -82,33 +78,50 @@ public class NewsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View nView = inflater.inflate(R.layout.fragment_news, container, false);
-        mRecyclerView = (RecyclerView) nView.findViewById(R.id.recycler_view_news);
-        mRecyclerView.setHasFixedSize(true);
+        View detailsView = inflater.inflate(R.layout.fragment_details, container, false);
+        ImageView img = (ImageView) detailsView.findViewById(R.id.img_detail);
+        TextView name = (TextView) detailsView.findViewById(R.id.name_detail);
+        TextView status = (TextView) detailsView.findViewById(R.id.status_detail);
+        TextView details = (TextView) detailsView.findViewById(R.id.detail_detail);
+        TextView donate = (TextView) detailsView.findViewById(R.id.donate_btn);
+        CardView donateCard = (CardView) detailsView.findViewById(R.id.donate_card);
 
-        mLayoutManager = new LinearLayoutManager(getContext());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        userLocalStore = new UserLocalStore(getContext());
-        user = userLocalStore.getLoggedInUser();
+        switch(mFragID){
+            case "donate":
+                try {
+                    name.setText((String) item.get("receiver_id"));
+                    status.setText((String) item.get("category"));
+                    details.setText((String) item.get("details"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                donateCard.setVisibility(View.VISIBLE);
+                break;
+            case "news":
+                try {
+                    name.setText((String) item.get("receiver_id"));
+                    status.setText((String) item.get("category"));
+                    details.setText((String) item.get("details"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                donateCard.setVisibility(View.GONE);
+                break;
+            case "donationTransaction":
+                try {
+                    name.setText((String) item.get("receiver_id"));
+                    status.setText((String) item.get("status"));
+                    String dtString = "Payment : "+((JSONObject)item.get("payment_info")).get("payment")+"\n"
+                            +"Transaction details : "+((JSONObject)item.get("payment_info")).get("details");
+                    details.setText(dtString);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                donateCard.setVisibility(View.GONE);
+                break;
+        }
 
-        getPopulateNews();
-        return nView;
-    }
-
-    private void getPopulateNews() {
-        NodeRequests serverRequest = new NodeRequests(getContext());
-        serverRequest.fetchNewsCollectionAsyncTask(new GetCallback() {
-            @Override
-            public <T> void done(T items) {
-                populateNews((ArrayList<JSONObject>) items);
-            }
-
-        });
-    }
-
-    private void populateNews(ArrayList<JSONObject> news) {
-        mAdapter = new NewsRecyclerCardAdapter(this.getActivity(), news);
-        mRecyclerView.setAdapter(mAdapter);
+        return detailsView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

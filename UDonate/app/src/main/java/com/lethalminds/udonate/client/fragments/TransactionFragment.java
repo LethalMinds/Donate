@@ -106,7 +106,7 @@ public class TransactionFragment extends Fragment {
     }
 
     private void populateTransactions(ArrayList<JSONObject> courses) {
-        mAdapter = new TransactionRecyclerCardAdapter(courses);
+        mAdapter = new TransactionRecyclerCardAdapter(this.getActivity(), courses);
         mRecyclerView.setAdapter(mAdapter);
     }
 
