@@ -1,38 +1,34 @@
 package com.lethalminds.udonate.client.fragments;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 
 import com.lethalminds.udonate.R;
-import com.lethalminds.udonate.client.adapters.PaymentsRecyclerCardAdapter;
-import com.lethalminds.udonate.client.adapters.TransactionRecyclerCardAdapter;
 import com.lethalminds.udonate.client.utilities.User;
 import com.lethalminds.udonate.client.utilities.UserLocalStore;
 import com.lethalminds.udonate.server.model.NodeRequests;
 import com.lethalminds.udonate.server.model.callbacks.GetCallback;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link PaymentFragment.OnFragmentInteractionListener} interface
+ * {@link AddCardFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link PaymentFragment#newInstance} factory method to
+ * Use the {@link AddCardFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PaymentFragment extends Fragment {
+public class AddCardFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -41,16 +37,12 @@ public class PaymentFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    RecyclerView mRecyclerView;
-    LinearLayoutManager mLayoutManager;
-    public UserLocalStore userLocalStore;
-    public User user;
-    public PaymentsRecyclerCardAdapter mAdapter;
-    public ArrayList<JSONObject> cardList;
+    UserLocalStore userLocalStore;
+    User user;
 
     private OnFragmentInteractionListener mListener;
 
-    public PaymentFragment() {
+    public AddCardFragment() {
         // Required empty public constructor
     }
 
@@ -60,11 +52,11 @@ public class PaymentFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment PaymentFragment.
+     * @return A new instance of fragment AddCardFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PaymentFragment newInstance(String param1, String param2) {
-        PaymentFragment fragment = new PaymentFragment();
+    public static AddCardFragment newInstance(String param1, String param2) {
+        AddCardFragment fragment = new AddCardFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -85,30 +77,33 @@ public class PaymentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View payView = inflater.inflate(R.layout.fragment_payment, container, false);
-        mRecyclerView = (RecyclerView) payView.findViewById(R.id.recycler_view_payments);
-        mRecyclerView.setHasFixedSize(true);
-
-        mLayoutManager = new LinearLayoutManager(getContext());
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        View aView = inflater.inflate(R.layout.fragment_add_card, container, false);
         userLocalStore = new UserLocalStore(getContext());
         user = userLocalStore.getLoggedInUser();
-        cardList = new ArrayList<JSONObject>();
-        try {
-            JSONArray cardsArray =  (JSONArray)(new JSONObject(user.userJSON)).get("cards");
-            for (int i=0; i <cardsArray.length(); i++){
-                if(cardsArray.getJSONObject(i).get("status").equals("active")) {
-                    cardList.add(cardsArray.getJSONObject(i));
-                }
-            }
-            mAdapter = new PaymentsRecyclerCardAdapter(this, cardList);
-            mRecyclerView.setAdapter(mAdapter);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return payView;
-    }
+        final EditText cardnumber = (EditText) aView.findViewById(R.id.card_number);
+        final EditText cardName = (EditText) aView.findViewById(R.id.name_Card);
+        final EditText cvv = (EditText) aView.findViewById(R.id.cvv_Card);
+        final EditText expiry = (EditText) aView.findViewById(R.id.expiry_Card);
+        final Button save = (Button) aView.findViewById(R.id.save_card);
 
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NodeRequests findUserAndAddCard = new NodeRequests(getContext());
+                findUserAndAddCard.addCardToUserCollectionAsyncTask(user.username,cardnumber.getText().toString(), cardName.getText().toString(),
+                        cvv.getText().toString(), expiry.getText().toString(), new GetCallback() {
+                    @Override
+                    public <T> void done(T items) {
+                        userLocalStore.storeUserData((User) items);
+                        getFragmentManager().popBackStackImmediate();
+                    }
+                });
+            }
+        });
+
+
+        return aView;
+    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -139,7 +134,7 @@ public class PaymentFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p/>
+     * <p>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.

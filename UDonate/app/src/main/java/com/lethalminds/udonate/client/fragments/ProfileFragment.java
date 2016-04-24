@@ -187,6 +187,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
                 fragmentTransaction.commit();
                 break;
             case R.id.addcard:
+                fragmentManager = getFragmentManager();
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.frame_container, new AddCardFragment()).addToBackStack(null);
+                fragmentTransaction.commit();
                 break;
             default:
                 break;

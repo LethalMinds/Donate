@@ -20,6 +20,7 @@ import android.widget.ListView;
 import com.lethalminds.udonate.R;
 import com.lethalminds.udonate.client.adapters.NavDrawerListAdapter;
 import com.lethalminds.udonate.client.fragments.AboutUsFragment;
+import com.lethalminds.udonate.client.fragments.AddCardFragment;
 import com.lethalminds.udonate.client.fragments.DetailsFragment;
 import com.lethalminds.udonate.client.fragments.DonateFragment;
 import com.lethalminds.udonate.client.fragments.LoginFragment;
@@ -38,7 +39,8 @@ public class MainActivity extends AppCompatActivity
         NewsFragment.OnFragmentInteractionListener, DonateFragment.OnFragmentInteractionListener,
         AboutUsFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener,
         ProfileEditFragment.OnFragmentInteractionListener, TransactionFragment.OnFragmentInteractionListener,
-        PaymentFragment.OnFragmentInteractionListener, DetailsFragment.OnFragmentInteractionListener{
+        PaymentFragment.OnFragmentInteractionListener, DetailsFragment.OnFragmentInteractionListener,
+        AddCardFragment.OnFragmentInteractionListener {
 
     // slide menu items
     private String[] navMenuTitles;
@@ -66,13 +68,11 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onBackStackChanged() {
                 //Set drawer opener only when there is 0 backstack fragments
-                if(fragmentManager.getBackStackEntryCount() == 0){
+                if (fragmentManager.getBackStackEntryCount() == 0) {
                     mDrawerToggle.setDrawerIndicatorEnabled(true);
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                     getSupportActionBar().setHomeButtonEnabled(true);
-                }
-                else
-                {
+                } else {
                     mDrawerToggle.setDrawerIndicatorEnabled(false);
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                     getSupportActionBar().setHomeButtonEnabled(true);
@@ -94,10 +94,10 @@ public class MainActivity extends AppCompatActivity
 
         //Create and Add Nav menu items
         NavDrawerItem newsItem = new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1));
-        NavDrawerItem donateItem =new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1));
-        NavDrawerItem profileItem =new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1));
-        NavDrawerItem loginItem =new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1));
-        NavDrawerItem aboutUsItem =new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1));
+        NavDrawerItem donateItem = new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1));
+        NavDrawerItem profileItem = new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1));
+        NavDrawerItem loginItem = new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1));
+        NavDrawerItem aboutUsItem = new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1));
         navDrawerItems.add(newsItem);
         navDrawerItems.add(donateItem);
         navDrawerItems.add(userLocalStore.getLoggedInUser() != null ? profileItem : loginItem);
@@ -136,8 +136,7 @@ public class MainActivity extends AppCompatActivity
         // toggle nav drawer on selecting action bar app icon/title
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
-        }
-        else if(item.getItemId() == android.R.id.home){
+        } else if (item.getItemId() == android.R.id.home) {
             this.onBackPressed();
             return true;
         }
@@ -161,7 +160,7 @@ public class MainActivity extends AppCompatActivity
             setTitle(navMenuTitles[position]);
             mDrawerLayout.closeDrawer(navDrawerLayout);
 
-            switch (position){
+            switch (position) {
                 case 0: // news screen
                     displayFragment(new NewsFragment());
                     break;
@@ -169,7 +168,8 @@ public class MainActivity extends AppCompatActivity
                     displayFragment(new DonateFragment());
                     break;
                 case 2:
-                    if(userLocalStore.getLoggedInUser() != null) displayFragment(new ProfileFragment());
+                    if (userLocalStore.getLoggedInUser() != null)
+                        displayFragment(new ProfileFragment());
                     else displayFragment(new LoginFragment());
                     break;
                 case 3:
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void displayFragment(Fragment frag){
+    public void displayFragment(Fragment frag) {
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_container, frag);
         fragmentTransaction.commit();

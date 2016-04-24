@@ -1,0 +1,98 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.lethalminds.udonate.client.fragments.AddCardFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/sample_text_card_number_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@android:color/holo_green_light"
+            android:paddingLeft="10sp"
+            android:paddingRight="10sp">
+
+            <EditText
+                android:id="@+id/card_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@android:color/holo_green_light"
+                android:cursorVisible="false"
+                android:inputType="number"
+                android:hint="Card Number"
+                android:textColorHighlight="@color/colorPrimary" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/sample_text_name_card_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@android:color/holo_green_light"
+            android:paddingLeft="10sp">
+
+            <EditText
+                android:id="@+id/name_Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@android:color/holo_green_light"
+                android:cursorVisible="false"
+                android:hint="Name on card"
+                android:textColorHighlight="@color/colorPrimary" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/sample_text_cvv_card_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@android:color/holo_green_light"
+            android:paddingLeft="10sp">
+
+            <EditText
+                android:id="@+id/cvv_Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@android:color/holo_green_light"
+                android:hint="CVV"
+                android:inputType="number"
+                android:textColorHighlight="@color/colorPrimary" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/sample_text_expiry_card_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="3"
+            android:backgroundTint="@android:color/holo_green_light"
+            android:paddingLeft="10sp">
+
+            <EditText
+                android:id="@+id/expiry_Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@android:color/holo_green_light"
+                android:hint="Expiry"
+                android:textColorHighlight="@color/colorPrimary" />
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/save_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:background="@color/colorPrimary"
+            android:text="SAVE"
+            android:textColor="@color/list_background" />
+    </LinearLayout>
+
+</FrameLayout>

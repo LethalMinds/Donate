@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
 /* POST getNews listing. */
 router.post('/getNews', function (req, res) {
     var deptCollection = req.dbo.collection('donations');
-    deptCollection.find({"status" : "new"}).toArray(function (err, docs) {
+    deptCollection.find({"status" : "process"}).toArray(function (err, docs) {
         if (!err) {
             res.send(docs);
         } else {

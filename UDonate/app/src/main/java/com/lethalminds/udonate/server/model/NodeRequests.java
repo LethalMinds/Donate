@@ -39,18 +39,18 @@ public class NodeRequests {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     }
 
-    public NodeRequests(String category,  Context context) {
+    public NodeRequests(String category, Context context) {
         this(context);
         this.category = category;
     }
 
-    public NodeRequests(String uname, String pass, Context context){
+    public NodeRequests(String uname, String pass, Context context) {
         this(context);
         this.uname = uname;
         this.pass = pass;
     }
 
-    public NodeRequests(String uname, String pass, String email, String address, String dob, Context context){
+    public NodeRequests(String uname, String pass, String email, String address, String dob, Context context) {
         this(uname, pass, context);
         this.email = email;
         this.address = address;
@@ -80,6 +80,16 @@ public class NodeRequests {
     public void updateBasicUserCollectionAsyncTask(GetCallback deptCallback) {
         progressDialog.show();
         new updateBasicUserCollectionAsyncTask(this.uname, this.pass, this.email, this.address, this.dob, deptCallback).execute();
+    }
+
+    public void addCardToUserCollectionAsyncTask(String username, String cardnumber, String cardname, String cvv, String expiry, GetCallback deptCallback) {
+        progressDialog.show();
+        new addCardToUserCollectionAsyncTask(username, cardnumber, cardname, cvv, expiry, deptCallback).execute();
+    }
+
+    public void obsoleteCardToUserCollectionAsyncTask(String username, String cardid, GetCallback deptCallback) {
+        progressDialog.show();
+        new obsoleteCardToUserCollectionAsyncTask(username, cardid, deptCallback).execute();
     }
 
     public class fetchNewsCollectionAsyncTask extends AsyncTask<Void, Void, ArrayList<JSONObject>> {
@@ -328,7 +338,7 @@ public class NodeRequests {
         String uname, pass, email, address, dob;
 
         public updateBasicUserCollectionAsyncTask(String username, String password,
-                                                  String email, String address, String dob,  GetCallback callback) {
+                                                  String email, String address, String dob, GetCallback callback) {
             this.callback = callback;
             this.uname = username;
             this.pass = password;
@@ -350,6 +360,144 @@ public class NodeRequests {
             try {
                 //Converting address String to URL
                 URL url = new URL(SERVER_ADDRESS + "users/findAndModify");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                //Post Method
+                con.setRequestMethod("POST");
+                con.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+                writer.write(encodedStr);
+                writer.flush();
+                StringBuilder sb = new StringBuilder();
+                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                String result = sb.toString();
+                JSONObject jObject = (JSONObject) (new JSONObject(result)).get("value");
+                if (jObject.length() != 0) {
+                    String username = jObject.getString("username");
+                    String email = jObject.getString("email");
+                    String address = jObject.getString("address");
+                    String dob = jObject.getString("dob");
+                    returnedUser = new User(username, email, pass, dob, address, jObject.toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return returnedUser;
+        }
+
+        @Override
+        protected void onPostExecute(User result) {
+            super.onPostExecute(result);
+            progressDialog.dismiss();
+            callback.done(result);
+        }
+    }
+
+    public class addCardToUserCollectionAsyncTask extends AsyncTask<Void, Void, User> {
+        GetCallback callback;
+        User returnedUser = null;
+        String uname, cardnumber, cardname, cvv, expiry;
+
+        public addCardToUserCollectionAsyncTask(String username, String cardnumber, String cardname, String cvv, String expiry, GetCallback callback) {
+            this.callback = callback;
+            this.uname = username;
+            this.cardnumber = cardnumber;
+            this.cardname = cardname;
+            this.cvv = cvv;
+            this.expiry = expiry;
+        }
+
+        @Override
+        protected User doInBackground(Void... params) {
+            BufferedReader reader = null;
+            Map<String, String> dataToSend = new HashMap<>();
+            dataToSend.put("username", this.uname);
+            dataToSend.put("cardnumber", this.cardnumber);
+            dataToSend.put("cardname", this.cardname);
+            dataToSend.put("cvv", this.cvv);
+            dataToSend.put("expiry", this.expiry);
+            String encodedStr = getEncodedData(dataToSend);
+            try {
+                //Converting address String to URL
+                URL url = new URL(SERVER_ADDRESS + "users/findUserAddCard");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                //Post Method
+                con.setRequestMethod("POST");
+                con.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+                writer.write(encodedStr);
+                writer.flush();
+                StringBuilder sb = new StringBuilder();
+                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                String result = sb.toString();
+                JSONObject jObject = (JSONObject) (new JSONObject(result)).get("value");
+                if (jObject.length() != 0) {
+                    String username = jObject.getString("username");
+                    String email = jObject.getString("email");
+                    String address = jObject.getString("address");
+                    String dob = jObject.getString("dob");
+                    returnedUser = new User(username, email, pass, dob, address, jObject.toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return returnedUser;
+        }
+
+        @Override
+        protected void onPostExecute(User result) {
+            super.onPostExecute(result);
+            progressDialog.dismiss();
+            callback.done(result);
+        }
+    }
+
+    public class obsoleteCardToUserCollectionAsyncTask extends AsyncTask<Void, Void, User> {
+        GetCallback callback;
+        User returnedUser = null;
+        String uname, cardid;
+
+        public obsoleteCardToUserCollectionAsyncTask(String username, String cardid, GetCallback callback) {
+            this.callback = callback;
+            this.uname = username;
+            this.cardid = cardid;
+        }
+
+        @Override
+        protected User doInBackground(Void... params) {
+            BufferedReader reader = null;
+            Map<String, String> dataToSend = new HashMap<>();
+            dataToSend.put("username", this.uname);
+            dataToSend.put("cardid", this.cardid);
+            String encodedStr = getEncodedData(dataToSend);
+            try {
+                //Converting address String to URL
+                URL url = new URL(SERVER_ADDRESS + "users/findAndObsoleteCard");
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 //Post Method
                 con.setRequestMethod("POST");
