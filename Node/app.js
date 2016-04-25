@@ -14,6 +14,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var news = require('./routes/news');
 var receiver = require('./routes/receiver');
+var transaction = require('./routes/transaction');
 var dbo;
 
 //Mongodb connection using mongodb client : the mangodb service has to be started on the server
@@ -53,6 +54,7 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/news', news);
 app.use('/receiver', receiver);
+app.use('/transaction', transaction);
 
 // passport config
 var Account = require('./models/account');

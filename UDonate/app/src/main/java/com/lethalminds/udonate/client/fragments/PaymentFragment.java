@@ -96,6 +96,7 @@ public class PaymentFragment extends Fragment {
         cardList = new ArrayList<JSONObject>();
         try {
             JSONArray cardsArray =  (JSONArray)(new JSONObject(user.userJSON)).get("cards");
+            //Display only active cards
             for (int i=0; i <cardsArray.length(); i++){
                 if(cardsArray.getJSONObject(i).get("status").equals("active")) {
                     cardList.add(cardsArray.getJSONObject(i));

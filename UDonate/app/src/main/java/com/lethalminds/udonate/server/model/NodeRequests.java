@@ -92,6 +92,11 @@ public class NodeRequests {
         new obsoleteCardToUserCollectionAsyncTask(username, cardid, deptCallback).execute();
     }
 
+    public void addTransactionCollectionAsyncTask(JSONObject receiver, String donorName, JSONObject paymentInfo, GetCallback deptCallback) {
+        progressDialog.show();
+        new addTransactionCollectionAsyncTask(receiver, donorName, paymentInfo, deptCallback).execute();
+    }
+
     public class fetchNewsCollectionAsyncTask extends AsyncTask<Void, Void, ArrayList<JSONObject>> {
         GetCallback callback;
         ArrayList<JSONObject> deptCourseList = new ArrayList<JSONObject>();
@@ -498,6 +503,76 @@ public class NodeRequests {
             try {
                 //Converting address String to URL
                 URL url = new URL(SERVER_ADDRESS + "users/findAndObsoleteCard");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                //Post Method
+                con.setRequestMethod("POST");
+                con.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+                writer.write(encodedStr);
+                writer.flush();
+                StringBuilder sb = new StringBuilder();
+                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                String result = sb.toString();
+                JSONObject jObject = (JSONObject) (new JSONObject(result)).get("value");
+                if (jObject.length() != 0) {
+                    String username = jObject.getString("username");
+                    String email = jObject.getString("email");
+                    String address = jObject.getString("address");
+                    String dob = jObject.getString("dob");
+                    returnedUser = new User(username, email, pass, dob, address, jObject.toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return returnedUser;
+        }
+
+        @Override
+        protected void onPostExecute(User result) {
+            super.onPostExecute(result);
+            progressDialog.dismiss();
+            callback.done(result);
+        }
+    }
+
+    public class addTransactionCollectionAsyncTask extends AsyncTask<Void, Void, User> {
+        GetCallback callback;
+        User returnedUser = null;
+        JSONObject receiver, paymentInfo;
+        String donorName;
+
+        public addTransactionCollectionAsyncTask(JSONObject receiver, String donorName, JSONObject paymentInfo, GetCallback callback) {
+            this.callback = callback;
+            this.receiver = receiver;
+            this.donorName = donorName;
+            this.paymentInfo = paymentInfo;
+        }
+
+        @Override
+        protected User doInBackground(Void... params) {
+            BufferedReader reader = null;
+            Map<String, String> dataToSend = new HashMap<>();
+            try {
+                dataToSend.put("username", this.donorName);
+                dataToSend.put("receiver", this.receiver.get("receiver_id").toString());
+                dataToSend.put("donationId", this.receiver.get("_id").toString());
+                dataToSend.put("payment_info", this.paymentInfo.toString());
+                String encodedStr = getEncodedData(dataToSend);
+                //Converting address String to URL
+                URL url = new URL(SERVER_ADDRESS + "transaction/addTransaction");
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 //Post Method
                 con.setRequestMethod("POST");

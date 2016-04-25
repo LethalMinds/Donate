@@ -44,7 +44,7 @@ public class TransactionRecyclerCardAdapter extends RecyclerView.Adapter<Transac
     public void onBindViewHolder(TransactionRecyclerCardAdapter.ViewHolder holder, final int position) {
         try {
             holder.header.setText(items.get(position).get("receiver_id").toString());
-            holder.status.setText(holder.status.getText().toString() + items.get(position).get("status").toString());
+            holder.status.setText("status :" + items.get(position).get("status").toString());
         } catch (JSONException e) {
             //Do nothing
         }

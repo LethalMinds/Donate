@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.lethalminds.udonate.client.fragments.DetailsFragment">
+    tools:context="com.lethalminds.udonate.client.fragments.ChoosePaymentFragment">
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -15,51 +15,51 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <LinearLayout
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/img_detail"
-                    android:layout_width="90sp"
-                    android:layout_height="90sp"
-                    android:layout_gravity="center_vertical"
-                    android:background="@drawable/ic_face_black_48dp" />
+                android:layout_height="0dp"
+                android:layout_margin="@dimen/card_margin"
+                android:layout_weight="1">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:gravity="center"
                     android:orientation="vertical"
                     android:paddingLeft="15sp">
 
                     <TextView
-                        android:id="@+id/name_detail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
                         android:padding="7sp"
-                        android:text="Name"
+                        android:text="Amount"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
-                    <TextView
-                        android:id="@+id/status_detail"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:padding="7sp"
-                        android:text="Status"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+                        android:orientation="horizontal">
 
+                        <TextView
+                            android:layout_width="20sp"
+                            android:layout_height="wrap_content"
+                            android:padding="7sp"
+                            android:text="$" />
+
+                        <EditText
+                            android:id="@+id/payment_amount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="amount in dollars"
+                            android:padding="7sp" />
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
+            </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="360dp"
-                android:layout_margin="@dimen/card_margin">
+                android:layout_height="0dp"
+                android:layout_margin="@dimen/card_margin"
+                android:layout_weight="3">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -71,38 +71,68 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="7sp"
-                        android:text="Details"
+                        android:text="Personal Message"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
-                    <TextView
-                        android:id="@+id/detail_detail"
+                    <EditText
+                        android:id="@+id/payment_detail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="7sp"
-                        android:text="details" />
+                        android:hint="Personal message"
+                        android:padding="7sp" />
 
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
-                android:id="@+id/donate_card"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:layout_gravity="bottom"
-                android:layout_margin="@dimen/card_margin">
+                android:layout_height="0dp"
+                android:layout_margin="@dimen/card_margin"
+                app:cardElevation="0dp"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingLeft="15sp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="7sp"
+                        android:text="Choose Payment"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recycler_view_payments_horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/pay_card"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="@dimen/card_margin"
+                android:layout_weight="1">
 
                 <TextView
-                    android:id="@+id/donate_btn"
+                    android:id="@+id/choosePayment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical"
                     android:background="@color/list_background_pressed"
                     android:padding="7sp"
-                    android:text="DONATE"
+                    android:text="Donate"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title" />
             </android.support.v7.widget.CardView>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
+
 </FrameLayout>

@@ -3,8 +3,9 @@ package com.lethalminds.udonate.client.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.StringDef;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lethalminds.udonate.R;
+import com.lethalminds.udonate.client.utilities.User;
+import com.lethalminds.udonate.client.utilities.UserLocalStore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +33,10 @@ public class DetailsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    UserLocalStore userLocalStore;
+    User user;
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
 
     // TODO: Rename and change types of parameters
     private String mParam1, mParam2, mFragID;
@@ -86,7 +93,7 @@ public class DetailsFragment extends Fragment {
         TextView donate = (TextView) detailsView.findViewById(R.id.donate_btn);
         CardView donateCard = (CardView) detailsView.findViewById(R.id.donate_card);
 
-        switch(mFragID){
+        switch (mFragID) {
             case "donate":
                 try {
                     name.setText((String) item.get("receiver_id"));
@@ -96,6 +103,20 @@ public class DetailsFragment extends Fragment {
                     e.printStackTrace();
                 }
                 donateCard.setVisibility(View.VISIBLE);
+                donateCard.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        fragmentManager = getFragmentManager();
+                        fragmentTransaction = fragmentManager.beginTransaction();
+                        ChoosePaymentFragment chPayFrag = new ChoosePaymentFragment();
+                        Bundle jsonBundle = new Bundle();
+                        jsonBundle.putString("json", item.toString());
+                        jsonBundle.putString("fragID","details");
+                        chPayFrag.setArguments(jsonBundle);
+                        fragmentTransaction.replace(R.id.frame_container, chPayFrag).addToBackStack(null);
+                        fragmentTransaction.commit();
+                    }
+                });
                 break;
             case "news":
                 try {
@@ -111,8 +132,8 @@ public class DetailsFragment extends Fragment {
                 try {
                     name.setText((String) item.get("receiver_id"));
                     status.setText((String) item.get("status"));
-                    String dtString = "Payment : "+((JSONObject)item.get("payment_info")).get("payment")+"\n"
-                            +"Transaction details : "+((JSONObject)item.get("payment_info")).get("details");
+                    String dtString = "Payment : " + ((JSONObject) item.get("payment_info")).get("payment") + "\n"
+                            + "Transaction details : " + ((JSONObject) item.get("payment_info")).get("details");
                     details.setText(dtString);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -153,7 +174,7 @@ public class DetailsFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p/>
+     * <p>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.

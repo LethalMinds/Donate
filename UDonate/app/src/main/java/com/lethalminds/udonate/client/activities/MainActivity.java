@@ -21,6 +21,7 @@ import com.lethalminds.udonate.R;
 import com.lethalminds.udonate.client.adapters.NavDrawerListAdapter;
 import com.lethalminds.udonate.client.fragments.AboutUsFragment;
 import com.lethalminds.udonate.client.fragments.AddCardFragment;
+import com.lethalminds.udonate.client.fragments.ChoosePaymentFragment;
 import com.lethalminds.udonate.client.fragments.DetailsFragment;
 import com.lethalminds.udonate.client.fragments.DonateFragment;
 import com.lethalminds.udonate.client.fragments.LoginFragment;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity
         AboutUsFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener,
         ProfileEditFragment.OnFragmentInteractionListener, TransactionFragment.OnFragmentInteractionListener,
         PaymentFragment.OnFragmentInteractionListener, DetailsFragment.OnFragmentInteractionListener,
-        AddCardFragment.OnFragmentInteractionListener {
+        AddCardFragment.OnFragmentInteractionListener, ChoosePaymentFragment.OnFragmentInteractionListener {
 
     // slide menu items
     private String[] navMenuTitles;
