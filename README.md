@@ -7,5 +7,5 @@ https://www.mongodb.com/
 #Restore MongoDB
 https://docs.mongodb.org/manual/tutorial/backup-and-restore-tools/
 
-Dump location - artifacts/mongodb/dump
-database name - udonate
+* Dump location - artifacts/mongodb/dump
+* Database name - udonate
