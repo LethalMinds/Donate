@@ -7,10 +7,10 @@ MongoDB - https://www.mongodb.org/downloads#production
 
 #Restore MongoDB
 https://docs.mongodb.org/manual/tutorial/backup-and-restore-tools/
-example - mongorestore --dir ~/artifacts/mongodb/dump/udonate
 
 * Dump location - artifacts/mongodb/dump
 * Database name - udonate
+* restore command example - mongorestore --dir ~/artifacts/mongodb/dump/udonate
 
 #Node dependencies
 * Install all the node dependencies listed on package.json under Node directory
