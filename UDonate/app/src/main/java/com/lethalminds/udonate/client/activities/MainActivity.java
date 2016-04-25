@@ -29,6 +29,7 @@ import com.lethalminds.udonate.client.fragments.NewsFragment;
 import com.lethalminds.udonate.client.fragments.PaymentFragment;
 import com.lethalminds.udonate.client.fragments.ProfileEditFragment;
 import com.lethalminds.udonate.client.fragments.ProfileFragment;
+import com.lethalminds.udonate.client.fragments.RegisterFragment;
 import com.lethalminds.udonate.client.fragments.TransactionFragment;
 import com.lethalminds.udonate.client.utilities.NavDrawerItem;
 import com.lethalminds.udonate.client.utilities.UserLocalStore;
@@ -41,7 +42,8 @@ public class MainActivity extends AppCompatActivity
         AboutUsFragment.OnFragmentInteractionListener, ProfileFragment.OnFragmentInteractionListener,
         ProfileEditFragment.OnFragmentInteractionListener, TransactionFragment.OnFragmentInteractionListener,
         PaymentFragment.OnFragmentInteractionListener, DetailsFragment.OnFragmentInteractionListener,
-        AddCardFragment.OnFragmentInteractionListener, ChoosePaymentFragment.OnFragmentInteractionListener {
+        AddCardFragment.OnFragmentInteractionListener, ChoosePaymentFragment.OnFragmentInteractionListener,
+        RegisterFragment.OnFragmentInteractionListener {
 
     // slide menu items
     private String[] navMenuTitles;
@@ -158,23 +160,29 @@ public class MainActivity extends AppCompatActivity
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             mDrawerList.setItemChecked(position, true);
             mDrawerList.setSelection(position);
-            setTitle(navMenuTitles[position]);
             mDrawerLayout.closeDrawer(navDrawerLayout);
 
             switch (position) {
                 case 0: // news screen
                     displayFragment(new NewsFragment());
+                    setTitle(navMenuTitles[position]);
                     break;
                 case 1:
                     displayFragment(new DonateFragment());
+                    setTitle(navMenuTitles[position]);
                     break;
                 case 2:
-                    if (userLocalStore.getLoggedInUser() != null)
+                    if (userLocalStore.getLoggedInUser() != null) {
                         displayFragment(new ProfileFragment());
-                    else displayFragment(new LoginFragment());
+                        setTitle(navMenuTitles[2]);
+                    } else {
+                        displayFragment(new LoginFragment());
+                        setTitle(navMenuTitles[3]);
+                    }
                     break;
                 case 3:
                     displayFragment(new AboutUsFragment());
+                    setTitle(navMenuTitles[4]);
                     break;
                 default:
                     break;

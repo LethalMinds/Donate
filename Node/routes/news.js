@@ -11,8 +11,8 @@ router.get('/', function(req, res, next) {
 
 /* POST getNews listing. */
 router.post('/getNews', function (req, res) {
-    var deptCollection = req.dbo.collection('donations');
-    deptCollection.find({"status" : "process"}).toArray(function (err, docs) {
+    var donationsCollection = req.dbo.collection('donations');
+    donationsCollection.find({"status" : "process"}).toArray(function (err, docs) {
         if (!err) {
             res.send(docs);
         } else {

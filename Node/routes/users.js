@@ -121,4 +121,19 @@ router.post('/getAllTransactions', function (req, res) {
     });
 });
 
+/* POST get all transactions for user listing. */
+router.post('/addUser', function (req, res) {
+    var usersCollection = req.dbo.collection('users');
+    var user = JSON.parse(req.body.user);
+    user.cards = [];
+    user.donationtransaction = [];
+    usersCollection.insertOne(user, function (err, result) {
+        if (!err) {
+            res.send(result);
+        } else {
+            console.dir(err);
+        }
+    });
+});
+
 module.exports = router;

@@ -32,4 +32,9 @@
         <item name="android:orientation">vertical</item>
     </style>
 
+    <string-array name="gender">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
 </resources>

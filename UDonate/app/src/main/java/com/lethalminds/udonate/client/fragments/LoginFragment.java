@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +41,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     private String mParam2;
     EditText uName,pass;
     UserLocalStore userLocalStore;
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
 
     private OnFragmentInteractionListener mListener;
 
@@ -138,6 +142,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                 });
                 break;
             case R.id.registerLink:
+                fragmentManager = getFragmentManager();
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.frame_container, new RegisterFragment()).addToBackStack(null);
+                fragmentTransaction.commit();
                 break;
             case R.id.forgotLink:
                 break;

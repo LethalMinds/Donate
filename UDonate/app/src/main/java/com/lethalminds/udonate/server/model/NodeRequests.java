@@ -97,6 +97,11 @@ public class NodeRequests {
         new addTransactionCollectionAsyncTask(receiver, donorName, paymentInfo, deptCallback).execute();
     }
 
+    public void addUserCollectionAsyncTask(JSONObject user, GetCallback deptCallback) {
+        progressDialog.show();
+        new addUserCollectionAsyncTask(user, deptCallback).execute();
+    }
+
     public class fetchNewsCollectionAsyncTask extends AsyncTask<Void, Void, ArrayList<JSONObject>> {
         GetCallback callback;
         ArrayList<JSONObject> deptCourseList = new ArrayList<JSONObject>();
@@ -612,6 +617,62 @@ public class NodeRequests {
 
         @Override
         protected void onPostExecute(User result) {
+            super.onPostExecute(result);
+            progressDialog.dismiss();
+            callback.done(result);
+        }
+    }
+
+    public class addUserCollectionAsyncTask extends AsyncTask<Void, Void, String> {
+        GetCallback callback;
+        String result = null;
+        JSONObject user;
+
+        public addUserCollectionAsyncTask(JSONObject user, GetCallback callback) {
+            this.callback = callback;
+            this.user = user;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            BufferedReader reader = null;
+            Map<String, String> dataToSend = new HashMap<>();
+            try {
+                dataToSend.put("user", this.user.toString());
+                String encodedStr = getEncodedData(dataToSend);
+                //Converting address String to URL
+                URL url = new URL(SERVER_ADDRESS + "users/addUser");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                //Post Method
+                con.setRequestMethod("POST");
+                con.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+                writer.write(encodedStr);
+                writer.flush();
+                StringBuilder sb = new StringBuilder();
+                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                result = sb.toString();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
             super.onPostExecute(result);
             progressDialog.dismiss();
             callback.done(result);
