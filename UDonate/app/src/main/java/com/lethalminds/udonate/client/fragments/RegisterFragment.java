@@ -141,11 +141,13 @@ public class RegisterFragment extends Fragment {
                         e.printStackTrace();
                     }
                     NodeRequests insertUser = new NodeRequests(getContext());
+                    //Temporary workaround for caching the context
+                    final Context cont = getContext();
                     insertUser.addUserCollectionAsyncTask(userJson,new GetCallback() {
                         @Override
                         public <T> void done(T result) {
                             getFragmentManager().popBackStackImmediate();
-                            Toast.makeText(getContext(),result.toString(),Toast.LENGTH_LONG).show();
+                            Toast.makeText(cont,"User created successfully. Please login again.!",Toast.LENGTH_LONG).show();
                         }
                     });
                 }
